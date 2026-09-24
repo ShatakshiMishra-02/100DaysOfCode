@@ -1,40 +1,43 @@
 // Problem Statement
-// Given n boards of different lengths and k painters, each painter paints contiguous boards. Painting a unit length of board takes one unit of time.
+// Given an array of integers where each element represents the number of pages in a book, and m students, allocate books such that each student gets at least one book and the maximum number of pages assigned to a student is minimized.
 
-// Determine the minimum time required to paint all boards.
+// Books must be allocated in contiguous order.
 
 // Input Format
-// n k
-// n space-separated integers representing board lengths
+// n m
+// n space-separated integers representing pages in books
 
 // Output Format
-// Print the minimum time required to paint all boards.
+// Print the minimum possible value of the maximum pages assigned to any student.
 
 // Sample Input
 // 4 2
-// 10 20 30 40
+// 12 34 67 90
 
 // Sample Output
-// 60
+// 113
 
 // Explanation
-// One painter paints boards of length 10, 20, and 30 (total 60), while the other paints board of length 40.
+// One optimal allocation is:
+// Student 1: 12 + 34 + 67 = 113
+// Student 2: 90
+// Maximum pages = 113 (minimum possible).
 
 #include <bits/stdc++.h>
 using namespace std;
 
-bool canPaint(vector<int>& boards, int k, long long maxTime) {
-    int painters = 1;
-    long long time = 0;
+bool canAllocate(vector<int>& pages, int m, long long maxPages) {
+    int students = 1;
+    long long sum = 0;
 
-    for (int board : boards) {
-        if (time + board <= maxTime) {
-            time += board;
+    for (int page : pages) {
+        if (sum + page <= maxPages) {
+            sum += page;
         } else {
-            painters++;
-            time = board;
+            students++;
+            sum = page;
 
-            if (painters > k)
+            if (students > m)
                 return false;
         }
     }
@@ -43,23 +46,24 @@ bool canPaint(vector<int>& boards, int k, long long maxTime) {
 }
 
 int main() {
-    int n, k;
-    cin >> n >> k;
+    int n, m;
+    cin >> n >> m;
 
-    vector<int> boards(n);
+    vector<int> pages(n);
     long long low = 0, high = 0;
 
     for (int i = 0; i < n; i++) {
-        cin >> boards[i];
-        low = max(low, (long long)boards[i]);
-        high += boards[i];
+        cin >> pages[i];
+
+        low = max(low, (long long)pages[i]);
+        high += pages[i];
     }
 
-    // Binary search for minimum maximum time
+    // Binary search for minimum possible maximum pages
     while (low < high) {
         long long mid = low + (high - low) / 2;
 
-        if (canPaint(boards, k, mid))
+        if (canAllocate(pages, m, mid))
             high = mid;
         else
             low = mid + 1;
